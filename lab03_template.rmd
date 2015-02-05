@@ -1,0 +1,176 @@
+---
+title: "lab03 - Relatório"
+author: " , "
+date: "02/05/2015"
+output: html_document
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(magrittr)
+library(tidyr)
+library(dplyr)
+library(jpeg)
+library(tree)
+```
+
+# Laboratório III - Recuperação de imagem
+
+## Objetivo
+
+- Verificar qual modelo entre **regressão linear** e **árvores de decisão** é o mais adequado para recuperar a o componente azul da imagem **purple_wave.jpge**.
+
+- Verificar qual modelo entre **regressão linear** e **árvores de decisão** é o mais adequado para recuperar a o componente azul da imagem **xadrez_colorido.jpge**.
+
+## Preparação do Banco de dados
+
+```{r}
+# a) carrega uma imagem jpeg no R 
+img <- readJPEG("data/purple_wave.jpg")
+
+# b) transforma o array da imagem em data.frame com infos de posicao (x,y) e cor (r,g,b)
+# dimensões da imagem
+img_dim <- dim(img)
+
+# RGB para data.frame
+img_df <- data_frame(
+  x = rep(1:img_dim[2], each = img_dim[1]),
+  y = rep(img_dim[1]:1, img_dim[2]),
+  r = as.vector(img[,,1]),
+  g = as.vector(img[,,2]),
+  b = as.vector(img[,,3])) %>%
+  mutate(cor = rgb(r, g, b), id = 1:n())
+```
+
+```{r}
+# para reprodução
+set.seed(1) 
+
+# Parte 1) x, y, r, g
+img_df_parte1 <- img_df %>% 
+  sample_frac(3/5) %>%        # separando 3/5 do banco
+  mutate(b_backup = b,        # backup do azul original
+         b = 0,               # retirando o azul da imagem
+         cor = rgb(r, g, b))  # cor da imagem sem o azul
+
+# Parte 2) x, y, r, g, b
+img_df_parte2 <- img_df %>% 
+  filter(!id %in% img_df_parte1$id) # filtra as linhas que estão na Parte 1
+```
+
+4. Visualize.
+
+Veja como fica a **imagem original sem o azul** e como é o **azul original isolado**.
+
+```{r,fig.height=4}
+# imagem sem o azul
+ggplot(img_df_parte1) + 
+  geom_point(aes(x=x, y=y), colour=img_df_parte1$cor) +
+  labs(x = "x", y = "y", title = "Imagem sem B (azul)") +
+  coord_fixed(ratio = 1) +
+  theme_bw()
+
+# apenas o azul da imagem
+ggplot(img_df_parte2, aes()) + 
+  geom_point(aes(x=x, y=y), colour=img_df_parte2$cor) +
+  labs(x = "x", y = "y", title = "Imagem só com B (azul)") +
+  coord_fixed(ratio = 1) +
+  theme_bw()
+```
+
+### Exercício 1: Descritiva
+
+**Trabalhe com a amostra**
+
+```{r}
+# uma amostra de 500 pontos para a análise descritiva (usar o banco inteiro é desnecessário e demorado)
+img_df_amostra <- img_df %>% 
+  sample_n(500,replace = FALSE)
+```
+
+Construa para `x`, `y`, `r`, `g`, `b`:
+
+- A matriz de correlação linear e arredonde os resultados para duas casas decimais (utilize a função `cor()`);
+
+```{r}
+## código aqui
+```
+
+
+- A matriz de gráficos de dispersão (use a função `pairs()`).
+
+```{r}
+## código aqui
+```
+
+### Exercício 2: Modelo de Regressão Linear
+
+- Com base na análise descritiva do exercício anterior, proponha um preditor para `b` e traduza para o R como uma fórmula.
+
+```{r}
+## código aqui
+## exemplo: 
+# form_ex <- formula(y ~ a + b)
+```
+
+- Ajuste uma **regressão linear** utilizando a fórmula proposta e a função `lm()`.
+
+```{r}
+## código aqui
+## exemplo:
+# modelo <- lm(form_ex, data=img_df_amostra)
+```
+
+### Exercício 3: Modelo de Árvore de Decisão
+
+- Com base na análise descritiva do exercício anterior, escolha as variáveis para predizer `b` e passe como uma fórmula à função.
+
+```{r}
+## código aqui
+```
+
+- Ajuste uma **árvore de decisão** por meio da função `tree()` do pacote `tree`, passando a fórmula com as variáveis escolhidas.
+
+```{r}
+## código aqui
+```
+
+### Exercício 4: Comparação
+
+- Calcule o erro de predição.
+
+```{r}
+## código aqui
+```
+
+- Desenhe os dados originais e o que foi predito.
+
+```{r}
+## código aqui
+```
+
+- Qual modelo ficou melhor?
+
+<!-- RESPOSTA AQUI -->
+
+- Você acha que o padrão da imagem (transições suaves de cor) influenciou neste resultado? Por quê?
+
+<!-- RESPOSTA AQUI -->
+
+### Exercício 5: Outra Imagem
+
+- Repita os exercícios de 1 a 4, mas agora para a imagem *xadrez_colorido.jpge*. 
+
+```{r}
+## código aqui
+```
+
+- Quanto ao desempenho para recuperar o azul de imagens, teve uma técnica melhor? Poe quê você obteve esse resultado?
+
+<!-- RESPOSTA AQUI -->
+
+## Exercício Extra (opcional): Imagens da Internet
+
+Crie duas *strings* no R, `link_lm` e `link_tree`, cada uma contendo, respectivamente: 
+- um link para uma imagem que seria bem recuperada pelo modelo de **regressão linear**;
+- um link para uma imagem que seria bem recuperada pelo modelo de **árvore de decisão**.
