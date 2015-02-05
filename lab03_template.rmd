@@ -47,40 +47,40 @@ img_df <- data_frame(
 set.seed(1) 
 
 # Parte 1) x, y, r, g
-img_df_parte1 <- img_df %>% 
+base_teste <- img_df %>% 
   sample_frac(3/5) %>%        # separando 3/5 do banco
   mutate(b_backup = b,        # backup do azul original
          b = 0,               # retirando o azul da imagem
          cor = rgb(r, g, b))  # cor da imagem sem o azul
 
 # Parte 2) x, y, r, g, b
-img_df_parte2 <- img_df %>% 
-  filter(!id %in% img_df_parte1$id) # filtra as linhas que estão na Parte 1
+base_treino <- img_df %>% 
+  filter(!id %in% base_teste$id)
 ```
-
-4. Visualize.
 
 Veja como fica a **imagem original sem o azul** e como é o **azul original isolado**.
 
 ```{r,fig.height=4}
-# imagem sem o azul
-ggplot(img_df_parte1) + 
-  geom_point(aes(x=x, y=y), colour=img_df_parte1$cor) +
+# Um pedaço (60%) da imagem, sem azul
+ggplot(base_teste) + 
+  geom_point(aes(x=x, y=y), colour=base_teste$cor) +
   labs(x = "x", y = "y", title = "Imagem sem B (azul)") +
   coord_fixed(ratio = 1) +
   theme_bw()
 
-# apenas o azul da imagem
-ggplot(img_df_parte2, aes()) + 
-  geom_point(aes(x=x, y=y), colour=img_df_parte2$cor) +
-  labs(x = "x", y = "y", title = "Imagem só com B (azul)") +
+# Outro pedaço (40%) da imagem, mas com as cores originais
+ggplot(base_treino) + 
+  geom_point(aes(x=x, y=y), colour=base_treino$cor) +
+  labs(x = "x", y = "y", title = "Imagem com todas as cores") +
   coord_fixed(ratio = 1) +
   theme_bw()
 ```
 
+Seu objetivo é recuperar a cor azul da `base_teste`.
+
 ### Exercício 1: Descritiva
 
-**Trabalhe com a amostra**
+**Trabalhe com a amostra só na descritiva. Na parte de modelos você vai usar** `base_treino` **e validar com** `base_teste`.
 
 ```{r}
 # uma amostra de 500 pontos para a análise descritiva (usar o banco inteiro é desnecessário e demorado)
@@ -110,7 +110,7 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 ```{r}
 ## código aqui
 ## exemplo: 
-# form_ex <- formula(y ~ a + b)
+# form_ex <- formula(y ~ A + B)
 ```
 
 - Ajuste uma **regressão linear** utilizando a fórmula proposta e a função `lm()`.
@@ -118,7 +118,7 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 ```{r}
 ## código aqui
 ## exemplo:
-# modelo <- lm(form_ex, data=img_df_amostra)
+# modelo <- lm(form_ex, data=base_treino)
 ```
 
 ### Exercício 3: Modelo de Árvore de Decisão
@@ -137,13 +137,13 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 
 ### Exercício 4: Comparação
 
-- Calcule o erro de predição.
+- Calcule o erro de predição dos dois modelos.
 
 ```{r}
 ## código aqui
 ```
 
-- Desenhe os dados originais e o que foi predito.
+- Compare os dados originais com o que foi predito nos dois modelos.
 
 ```{r}
 ## código aqui
@@ -165,7 +165,7 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 ## código aqui
 ```
 
-- Quanto ao desempenho para recuperar o azul de imagens, teve uma técnica melhor? Poe quê você obteve esse resultado?
+- Quanto ao desempenho para recuperar o azul de imagens, teve uma técnica melhor? Por quê você obteve esse resultado?
 
 <!-- RESPOSTA AQUI -->
 
