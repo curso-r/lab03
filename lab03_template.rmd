@@ -18,9 +18,9 @@ library(tree)
 
 ## Objetivo
 
-- Verificar qual modelo entre **regressão linear** e **árvores de decisão** é o mais adequado para recuperar a o componente azul da imagem **purple_wave.jpge**.
+- Verificar qual modelo entre **regressão linear** e **árvores de decisão** é o mais adequado para recuperar a o componente azul da imagem **purple_wave.jpg**.
 
-- Verificar qual modelo entre **regressão linear** e **árvores de decisão** é o mais adequado para recuperar a o componente azul da imagem **xadrez_colorido.jpge**.
+- Verificar qual modelo entre **regressão linear** e **árvores de decisão** é o mais adequado para recuperar a o componente azul da imagem **xadrez_colorido.jpg**.
 
 ## Preparação do Banco de dados
 
@@ -159,7 +159,7 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 
 ### Exercício 5: Outra Imagem
 
-- Repita os exercícios de 1 a 4, mas agora para a imagem *xadrez_colorido.jpge*. 
+- Repita os exercícios de 1 a 4, mas agora para a imagem *xadrez_colorido.jpg*. 
 
 ```{r}
 ## código aqui
