@@ -71,7 +71,7 @@ ggplot(base_teste) +
 # 100% da imagem, com apenas o azul
 ggplot(img_df) + 
   geom_point(aes(x=x, y=y), colour=rgb(0, 0, img_df$b)) +
-  labs(x = "x", y = "y", title = "Imagem com todas as cores") +
+  labs(x = "x", y = "y", title = "Imagem com apenas o azul") +
   coord_fixed(ratio = 1) +
   theme_bw()
 
@@ -162,10 +162,11 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 # erro_de_predicao <- média do predito menos observado ao quadrado
 ```
 
-- Compare visualmente os dados originais com o que foi predito nos dois modelos. Para isso,
-- chame de `fit_lm` o seu objeto que guarda o modelo regressão;
-- chame de `fit_tree` o objeto que guarda o modelo de árvore de decisão; e 
-- rode o código abaixo (caso o modelo não esteja no objeto `fit_*` o código não funcionará!).
+- Compare visualmente os dados originais com o que foi predito nos dois modelos. Para isso, 
+
+    - chame de `fit_lm` o seu objeto que guarda o modelo regressão;
+    - chame de `fit_tree` o objeto que guarda o modelo de árvore de decisão; e 
+    - rode o código abaixo (caso o modelo não esteja no objeto `fit_*` o código não funcionará!).
 
 ```{r, eval=FALSE}
 fit_lm <-
