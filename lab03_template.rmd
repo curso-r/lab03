@@ -28,8 +28,10 @@ library(tree)
 # a) carrega uma imagem jpeg no R 
 img <- readJPEG("data/purple_wave.jpg")
 
+
 # b) transforma o array da imagem em data.frame com infos de posicao (x,y) e cor (r,g,b)
 # dimensões da imagem
+
 img_dim <- dim(img)
 
 # RGB para data.frame
