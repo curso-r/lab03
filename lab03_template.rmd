@@ -28,10 +28,8 @@ library(tree)
 # a) carrega uma imagem jpeg no R 
 img <- readJPEG("data/purple_wave.jpg")
 
-
 # b) transforma o array da imagem em data.frame com infos de posicao (x,y) e cor (r,g,b)
 # dimensões da imagem
-
 img_dim <- dim(img)
 
 # RGB para data.frame
@@ -70,9 +68,16 @@ ggplot(base_teste) +
   coord_fixed(ratio = 1) +
   theme_bw()
 
-# Outro pedaço (40%) da imagem, mas com as cores originais
-ggplot(base_treino) + 
-  geom_point(aes(x=x, y=y), colour=base_treino$cor) +
+# 100% da imagem, com apenas o azul
+ggplot(img_df) + 
+  geom_point(aes(x=x, y=y), colour=rgb(0, 0, img_df$b)) +
+  labs(x = "x", y = "y", title = "Imagem com apenas o azul") +
+  coord_fixed(ratio = 1) +
+  theme_bw()
+
+# 100% da imagem, com as cores originais
+ggplot(img_df) + 
+  geom_point(aes(x=x, y=y), colour=img_df$cor) +
   labs(x = "x", y = "y", title = "Imagem com todas as cores") +
   coord_fixed(ratio = 1) +
   theme_bw()
@@ -123,6 +128,8 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 # modelo <- lm(form_ex, data=base_treino)
 ```
 
+- Caso seja necessário, reduza o modelo utilizando valor-p (que o `summary()` retorna) como critério.
+
 ### Exercício 3: Modelo de Árvore de Decisão
 
 - Com base na análise descritiva do exercício anterior, escolha as variáveis para predizer `b` e passe como uma fórmula à função.
@@ -137,18 +144,83 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 ## código aqui
 ```
 
-### Exercício 4: Comparação
-
-- Calcule o erro de predição dos dois modelos.
+- Faça um *cross-validation* com a função `cv.tree()` do seu objeto e dê um `plot()` para descobrir qual o melhor tamanho de árvore. Em seguida, utilize `prune.tree()` para recuperar a árvore com este tamanho.
 
 ```{r}
 ## código aqui
+## exemplo:
+## melhor_arvore <- prune.tree(ajuste_tree, best = K)
 ```
 
-- Compare os dados originais com o que foi predito nos dois modelos.
+### Exercício 4: Comparação
 
-```{r}
+- Calcule o erro de predição dos dois modelos (**DICA** use a função `predict()` para pegar os valores preditos, aplicando na base de teste `base_teste`).
+
+```{r eval=FALSE}
 ## código aqui
+# Exemplo: 
+base_teste$predicao_modelo1 <- predict(modelo1, base_teste)
+erro_de_predicao <- ~média do predito menos observado ao quadrado~
+```
+
+- Compare visualmente os dados originais com o que foi predito nos dois modelos. Para isso, 
+
+    - chame de `fit_lm` o seu objeto que guarda o modelo regressão;
+    - chame de `fit_tree` o objeto que guarda o modelo de árvore de decisão; e 
+    - rode o código abaixo (caso o modelo não esteja no objeto `fit_*` o código não funcionará!).
+
+```{r, eval=FALSE}
+fit_lm <-
+fit_tree <-
+  
+# Visualizações dos azuis preditos
+base_visualiza_pred <- base_teste %>% 
+  mutate(b_lm = predict(fit_lm, newdata = base_teste) %>% pmax(0) %>% pmin(1),
+         b_tree = predict(fit_tree, newdata = base_teste) %>% pmax(0) %>% pmin(1),
+         cor_lm = rgb(r, g, b_lm),
+         cor_tree = rgb(r, g, b_tree),
+         cor_apenas_b_lm = rgb(0, 0, b_lm),
+         cor_apenas_b_tree = rgb(0, 0, b_tree),
+         cor_orig = rgb(r, g, b_backup),
+         cor_sem_b = rgb(r, g, 0),
+         cor_apenas_b_orig = rgb(0, 0, b_backup))
+
+# base GGPLOT dos gráficos
+p <- ggplot(data = base_visualiza_pred, aes(x = x, y = y)) +
+  coord_fixed(ratio = 1) +
+  theme_bw()
+```
+
+Rode o código abaixo para gerar 3 imagens apenas com os azuis: 
+- azul recuperado pelo **modelo de regressão**; 
+- azul recuperado pelo modelo de **árvore de decisão**; e 
+- o azul original da imagem.
+
+```{r, eval=FALSE}
+# IMAGEMS APENAS COM AZUIS COMPARAÇÃO 
+p + geom_point(colour = base_visualiza_pred$cor_apenas_b_lm) +
+  labs(x = "x", y = "y", title = "Azul recuperado pelo LM")
+
+p + geom_point(colour = base_visualiza_pred$cor_apenas_b_tree) +
+  labs(x = "x", y = "y", title = "Azul recuperado pelo TREE")
+
+p + geom_point(colour = base_visualiza_pred$cor_apenas_b_orig) +
+  labs(x = "x", y = "y", title = "Azul original")
+
+```
+
+Agora, as mesmas três imagens, mas com as demais cores juntas:
+
+```{r, eval=FALSE}
+p + geom_point(colour = base_visualiza_pred$cor_lm) +
+  labs(x = "x", y = "y", title = "Imagem com cor azul recuperada pelo LM")
+
+p + geom_point(colour = base_visualiza_pred$cor_tree) +
+  labs(x = "x", y = "y", title = "Imagem com cor azul recuperada pelo TREE")
+
+p + geom_point(colour = base_visualiza_pred$cor_orig) +
+  labs(x = "x", y = "y", title = "Imagem com cor azul original") 
+
 ```
 
 - Qual modelo ficou melhor?
@@ -171,7 +243,7 @@ Construa para `x`, `y`, `r`, `g`, `b`:
 
 <!-- RESPOSTA AQUI -->
 
-## Exercício Extra (opcional): Imagens da Internet
+### Exercício Extra (opcional): Imagens da Internet
 
 Crie duas *strings* no R, `link_lm` e `link_tree`, cada uma contendo, respectivamente: 
 - um link para uma imagem que seria bem recuperada pelo modelo de **regressão linear**;
